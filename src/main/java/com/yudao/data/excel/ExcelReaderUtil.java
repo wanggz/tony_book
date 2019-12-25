@@ -106,7 +106,7 @@ public class ExcelReaderUtil {
 
     public static void main(String[] args) throws Exception {
 
-        String file = "D:\\workspaces\\booksearch_v2.1\\booksearch_v2.1\\book\\files\\books_en.xls";
+        String file = System.getProperty("user.dir") + "/files/books_en.xls";
 
         File file1 = new File(file);
 
@@ -114,6 +114,7 @@ public class ExcelReaderUtil {
         for(String s : data.getFirstSheetList().get(1)){
             System.out.println(s);
         }
+
 
     }
  

@@ -1,6 +1,8 @@
 package com.yudao.index;
 
 import com.yudao.constant.Constant;
+import com.yudao.data.excel.ImportExcelData;
+import com.yudao.entity.Book;
 import com.yudao.entity.News;
 import com.yudao.utils.DateUtils;
 import com.yudao.utils.LucenceUtils;
@@ -8,10 +10,13 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.yudao.data.excel.ExcelReaderUtil.readExcel2;
 
 /**
  * 功能1：导入数据，批量新建索引，根据id自动更新索引。
@@ -84,7 +89,32 @@ public class IndexWriter {
     }
 
     private void loadData(){
+        String file = System.getProperty("user.dir") + "/files/books_en.xls";
+        File file1 = new File(file);
+        try {
+            org.apache.lucene.index.IndexWriter writer = LucenceUtils.getWriter(FSDirectory.open(Paths.get(Constant.INDEX_PATH)));
+            ImportExcelData data = readExcel2(file1);
+            for (List<String> item : data.getFirstSheetList()) {
+                Book book = new Book(item.get(0),item.get(1),item.get(2),item.get(3),item.get(4),item.get(5),item.get(6));
 
+                Document doc = new Document();
+                //doc.add(new StringField("content",n.getContent(), Field.Store.YES));
+                //doc.add(new StringField("title",n.getTitle(), Field.Store.YES));
+                //doc.add(new StringField("datetime",n.getDatetime(), Field.Store.YES));
+                //用于排序
+                //doc.add(new NumericDocValuesField("datetime", DateUtils.toDate(n.getDatetime(), DateUtils.YYYY_MM_DD_HH_MM_SS).getTime()));
+                //doc.add(new StringField("id" , n.getId()+"", Field.Store.YES));
+
+                Term id=new Term("id",book.getNo());
+
+                writer.updateDocument(id,doc);
+            }
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
