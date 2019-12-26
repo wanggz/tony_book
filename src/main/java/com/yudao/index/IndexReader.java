@@ -29,6 +29,8 @@ public class IndexReader {
 
         search(pageStart,pageSize,field,keyword);
 
+        //search2();
+
     }
 
     private static void search(int pageStart, int pageSize, int field, String keyword){
@@ -47,11 +49,13 @@ public class IndexReader {
                 fields = new String[]{"name", "author", "publisher"};
         }
 
+        BooleanClause.Occur [] flags = new BooleanClause.Occur[]{BooleanClause.Occur.MUST,BooleanClause.Occur.MUST,BooleanClause.Occur.MUST};
         Analyzer analyzer = new StandardAnalyzer();
+
         MultiFieldQueryParser parser=new MultiFieldQueryParser(fields,analyzer);
 
         try {
-            Query query=parser.parse(keyword);
+            Query query=parser.parse(keyword,fields,flags,analyzer);
 
             Directory dir = FSDirectory.open(Paths.get(Constant.INDEX_PATH));
             org.apache.lucene.index.IndexReader reader = DirectoryReader.open(dir);
@@ -60,10 +64,13 @@ public class IndexReader {
             //------------查询
             //searcher.search(query, LuceneManagerImpl.DEFAULT_QUERY_NUM);
             int numHits = search.count(query);
+            TopDocs topDocs = search.search(query,pageSize);
+            System.out.println(topDocs.totalHits);
+
             if(numHits > 0) {
                 //按照时间倒序
                 Sort sort = new Sort();
-                sort.setSort(new SortField("id", SortField.Type.LONG, true));//倒序
+                //sort.setSort(new SortField("id", SortField.Type.STRING, false));//倒序
 
                 //分页
                 TopFieldCollector c = TopFieldCollector.create(sort, pageStart+pageSize, false, false, false);
@@ -112,7 +119,7 @@ public class IndexReader {
             if(numHits > 0) {
                 //按照时间倒序
                 Sort sort = new Sort();
-                sort.setSort(new SortField(sortField, SortField.Type.LONG, true));//倒序
+                //sort.setSort(new SortField(sortField, SortField.Type.STRING, true));//倒序
 
                 //分页
                 TopFieldCollector c = TopFieldCollector.create(sort, pageStart+pageSize, false, false, false);
@@ -124,8 +131,8 @@ public class IndexReader {
                         int docID = hits[i].doc;
                         Document doc = search.doc(docID);
                         System.out.println("文档ID:" + docID + "  新闻ID:" + doc.get("id")
-                                + "   新闻标题:" + doc.get("title") + "  新闻内容:" + doc.get("content")
-                                +"  时间:" + doc.get("datetime"));
+                                + "   新闻标题:" + doc.get("name") + "  新闻内容:" + doc.get("publisher")
+                                +"  时间:" + doc.get("count"));
                     }
                 }
             }
