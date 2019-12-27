@@ -27,7 +27,7 @@ import static com.yudao.data.excel.ExcelReaderUtil.readExcel2;
  */
 public class IndexWriter {
 
-    public static void main(String[] args) {
+    public static void maain(String[] args) {
 
         loadData();
     }

@@ -40,7 +40,7 @@
           <div class="btn-group">
             <a class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
               <!--选中option之后，要在这里显示选中值，类似原始select里面的文本框-->
-              <span class="placeholder">全部</span>
+              <span class="placeholder" value="1">全部</span>
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -58,7 +58,8 @@
           <button id="search" type="button" class="btn btn-default">搜索</button>
         </div>
         <div class="add_strategy_box" style="display: none">
-          <input type="text" class="gd-input gd-input-lg">
+          <!--<input type="text" class="gd-input gd-input-lg"> -->
+          <input type="hidden" id="pageStart" name="pageStart" value="0" />
         </div>
       </div>
     </form>
@@ -147,6 +148,7 @@
                       obj.val=opt.attr("value");
                       obj.index=opt.index();
                       obj.placeholder.text(obj.text);
+                      obj.placeholder.value=obj.val;
                   });
               },
               getText:function(){
@@ -160,9 +162,8 @@
               }
           }
           $(document).ready(function(){
-              var mydropdown=new customDropDown($("#dropdown1"));
-          });
 
+          });
 
           $(document).keyup(function(event){
               if(event.keyCode ==13){
@@ -170,31 +171,28 @@
               }
           });
 
-          $(document).ready(function(){
-              var mydropdown=new customDropDown($("#dropdown"));
-          });
-
-
           $("#search").bind("click",function(){
               var keyWord = $("#content").val().toLowerCase();
-              var count = 0;
-              $("#tablebox").empty();
-              for(var i=0;i<book_arr.length;i++){
-                  if(book_arr[i].name.toLowerCase().indexOf(keyWord)>=0){
-                      appendTr(book_arr[i]);
-                      count++;
-                  } else if(book_arr[i].author.toLowerCase().indexOf(keyWord)>=0){
-                      appendTr(book_arr[i]);
-                      count++;
-                  } else if(book_arr[i].publisher.toLowerCase().indexOf(keyWord)>=0){
-                      appendTr(book_arr[i]);
-                      count++;
+              //dropdownMenu1
+              var mydropdown = new customDropDown($("#dropdown1"));
+              var field = mydropdown.placeholder["0"].textContent;
+              var pageStart = $("#pageStart").val();
+
+              $.ajax({
+                  type : "GET",
+                  contentType: "application/json;charset=UTF-8",
+                  url : "/query/"+keyWord+"/"+field+"/"+pageStart,
+                  success : function(result) {
+                      $("#result").show();
+                      console.log(result);
+                  },
+                  error : function(e){
+                      console.log(e.status);
+                      console.log(e.responseText);
                   }
-                  if(count>=10){
-                      break;
-                  }
-              }
-              $("#result").show();
+              });
+
+
           });
 
           function appendTr(item) {

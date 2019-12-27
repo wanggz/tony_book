@@ -1,6 +1,7 @@
 package com.yudao.index;
 
 import com.yudao.constant.Constant;
+import com.yudao.entity.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -24,7 +25,7 @@ public class IndexReader {
 
         int pageStart = 0;//开始ID
         int pageSize = 10;//每页大小
-        int field = 0;//查找域
+        String field = "全部";//查找域
         String keyword = "印度";//关键字
 
         search(pageStart,pageSize,field,keyword);
@@ -33,17 +34,19 @@ public class IndexReader {
 
     }
 
-    private static void search(int pageStart, int pageSize, int field, String keyword){
+    public static void search(int pageStart, int pageSize, String field, String keyword){
+
+        Result result = new Result();
 
         String[] fields;
         switch (field){
-            case 0:
+            case "全部":
                 fields = new String[]{"name", "author", "publisher"};
-            case 1:
+            case "题名":
                 fields = new String[]{"name"};
-            case 2:
+            case "责任者":
                 fields = new String[]{"author"};
-            case 3:
+            case "出版者":
                 fields = new String[]{"publisher"};
             default:
                 fields = new String[]{"name", "author", "publisher"};
@@ -64,8 +67,8 @@ public class IndexReader {
             //------------查询
             //searcher.search(query, LuceneManagerImpl.DEFAULT_QUERY_NUM);
             int numHits = search.count(query);
+            result.setNumHits(numHits);
             TopDocs topDocs = search.search(query,pageSize);
-            System.out.println(topDocs.totalHits);
 
             if(numHits > 0) {
                 //按照时间倒序
