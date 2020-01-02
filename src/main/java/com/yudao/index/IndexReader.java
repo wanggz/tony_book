@@ -24,11 +24,12 @@ public class IndexReader {
     public static void main(String[] args) {
 
         int pageStart = 0;//开始ID
+        int pageNoNow = 1;
         int pageSize = 10;//每页大小
         String field = "全部";//查找域
         String keyword = "印度";//关键字
 
-        Result result = search(pageStart,pageSize,field,keyword);
+        Result result = search(pageStart,pageSize,pageNoNow,field,keyword);
         System.out.println(result.getNumHits());
         System.out.println(result.getBooks().get(0).getName());
 
@@ -36,7 +37,7 @@ public class IndexReader {
 
     }
 
-    public static Result search(int pageStart, int pageSize, String field, String keyword){
+    public static Result search(int pageStart, int pageSize, int pageNoNow,String field, String keyword){
 
         Result result = new Result();
 
@@ -68,6 +69,12 @@ public class IndexReader {
 
             int numHits = search.count(query);
             result.setNumHits(numHits);
+            result.setPageStart(pageStart);
+            result.setPageSize(pageSize);
+            result.setPageNoNow(pageNoNow);
+            int pageNoMax = numHits / pageSize + 1;
+            result.setPageNoList(getPageList(pageNoNow,pageNoMax));
+
 
             List<Book> books = new ArrayList<>();
             if(numHits > 0) {
@@ -97,6 +104,32 @@ public class IndexReader {
             return result;
         }
 
+    }
+
+    public static List<Integer> getPageList(int pageNoNow, int pageNoMax) {
+        int begin = pageNoNow - 2 >=1 ? pageNoNow - 2 : 1;
+        int end = pageNoNow +2 <= pageNoMax ? pageNoNow +2 : pageNoMax;
+
+        List<Integer> pagelist = new ArrayList<>();
+        if(begin == 1){
+            int s_end = pageNoMax>5 ? 5 : pageNoMax;
+            for(int i = 1; i <= s_end; i++) {
+                pagelist.add(i);
+            }
+        } else {
+            if(end == pageNoMax) {
+                int s_begin = pageNoMax - 5 > 0 ? pageNoMax - 4 : 1;
+                for(int i = s_begin; i <= pageNoMax; i++){
+                    pagelist.add(i);
+                }
+            } else {
+                for(int i = begin; i <= end; i++) {
+                    pagelist.add(i);
+                }
+            }
+        }
+
+        return pagelist;
     }
 
 

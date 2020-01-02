@@ -58,8 +58,9 @@
           <button id="search" type="button" class="btn btn-default">搜索</button>
         </div>
         <div class="add_strategy_box" style="display: none">
-          <!--<input type="text" class="gd-input gd-input-lg"> -->
+          <input type="text" class="gd-input gd-input-lg">
           <input type="hidden" id="pageStart" name="pageStart" value="0" />
+          <input type="hidden" id="pageNoNow" name="pageNoNow" value="1" />
         </div>
       </div>
     </form>
@@ -71,7 +72,7 @@
 
       <div class="panel panel-default" style="display:none;" id="result">
 
-        <div class="panel-heading">搜索引擎为您找到相关结果约？？？个</div>
+        <div class="panel-heading">搜索引擎为您找到相关结果约<span id="s_count"></span>个</div>
 
         <table class="table">
           <thead>
@@ -90,14 +91,16 @@
 
         <nav aria-label="Page navigation" style="text-align: center">
           <ul class="pagination">
-            <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-            <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
+            <li class="disabled"><a href="" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+
+            <li class="active"><a href="">1 <span class="sr-only">(current)</span></a></li>
+            <li><a href="">2</a></li>
+            <li><a href="">3</a></li>
+            <li><a href="">4</a></li>
+            <li><a href="">5</a></li>
+
             <li>
-              <a href="#" aria-label="Next">
+              <a href="" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
@@ -162,7 +165,7 @@
               }
           }
           $(document).ready(function(){
-
+              var mydropdown=new customDropDown($("#dropdown1"));
           });
 
           $(document).keyup(function(event){
@@ -177,14 +180,25 @@
               var mydropdown = new customDropDown($("#dropdown1"));
               var field = mydropdown.placeholder["0"].textContent;
               var pageStart = $("#pageStart").val();
+              var pageNoNow = $("#pageNoNow").val();
 
               $.ajax({
                   type : "GET",
                   contentType: "application/json;charset=UTF-8",
-                  url : "/query/"+keyWord+"/"+field+"/"+pageStart,
+                  url : "/query/"+keyWord+"/"+field+"/"+pageStart+"/"+pageNoNow,
                   success : function(result) {
-                      $("#result").show();
-                      console.log(result);
+                      //填充s_count
+                      $("#s_count").text(result.numHits);
+                      //填充pageNoNow
+                      $("#pageNoNow").val(result.pageNoNow);
+                      //填充pagenav
+
+                      //填充内容
+                      $("#tablebox").empty();
+                      for(var i=0;i<result.books.length;i++){
+                          appendTr(result.books[i]);
+                      }
+                    $("#result").show();
                   },
                   error : function(e){
                       console.log(e.status);

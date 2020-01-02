@@ -9,6 +9,9 @@ public class Result {
 
     private int numHits;
     private int pageStart;
+    private int pageSize;
+    private int pageNoNow;
+    private List<Integer> pageNoList;
     private List<Book> books;
 
     public int getNumHits() {
@@ -33,5 +36,29 @@ public class Result {
 
     public void setBooks(List<Book> books) {
         this.books = books;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getPageNoNow() {
+        return pageNoNow;
+    }
+
+    public void setPageNoNow(int pageNoNow) {
+        this.pageNoNow = pageNoNow;
+    }
+
+    public List<Integer> getPageNoList() {
+        return pageNoList;
+    }
+
+    public void setPageNoList(List<Integer> pageNoList) {
+        this.pageNoList = pageNoList;
     }
 }
