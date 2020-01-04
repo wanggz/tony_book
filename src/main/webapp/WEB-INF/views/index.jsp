@@ -89,22 +89,8 @@
           <tbody id="tablebox"></tbody>
         </table>
 
-        <nav aria-label="Page navigation" style="text-align: center">
-          <ul class="pagination">
-            <li class="disabled"><a href="" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+        <nav aria-label="Page navigation" style="text-align: center" id="nav">
 
-            <li class="active"><a href="">1 <span class="sr-only">(current)</span></a></li>
-            <li><a href="">2</a></li>
-            <li><a href="">3</a></li>
-            <li><a href="">4</a></li>
-            <li><a href="">5</a></li>
-
-            <li>
-              <a href="" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
         </nav>
 
       </div>
@@ -175,12 +161,17 @@
           });
 
           $("#search").bind("click",function(){
+              ajaxFunction();
+          });
+
+          function ajaxFunction(){
               var keyWord = $("#content").val().toLowerCase();
               //dropdownMenu1
               var mydropdown = new customDropDown($("#dropdown1"));
               var field = mydropdown.placeholder["0"].textContent;
               var pageStart = $("#pageStart").val();
               var pageNoNow = $("#pageNoNow").val();
+              alert("pageNoNow:"+pageNoNow+",pageStart:"+pageStart);
 
               $.ajax({
                   type : "GET",
@@ -192,7 +183,9 @@
                       //填充pageNoNow
                       $("#pageNoNow").val(result.pageNoNow);
                       //填充pagenav
-
+                      $("#nav").empty();
+                      createNav(result.pageNoList);
+                      bingPageClick();
                       //填充内容
                       $("#tablebox").empty();
                       for(var i=0;i<result.books.length;i++){
@@ -205,9 +198,7 @@
                       console.log(e.responseText);
                   }
               });
-
-
-          });
+          }
 
           function appendTr(item) {
               var $trTemp = $("<tr></tr>");
@@ -219,6 +210,42 @@
               $trTemp.append("<td>"+ item.count +"</td>");
               $trTemp.append("<td>"+ item.address +"</td>");
               $trTemp.appendTo("#tablebox");
+          }
+
+          function createNav(pageNums) {
+              var $navTemp = $("<ul class='pagination'></ul>");
+              if($("#pageNoNow").val() == "1") {
+                  $navTemp.append("<li class='disabled'><a aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
+              } else {
+                  $navTemp.append("<li><a aria-label='Previous'><span aria-hidden='true'>&laquo;</span></a></li>");
+              }
+              for(var i=0;i<pageNums.length;i++){
+                  if(pageNums[i] == $("#pageNoNow").val()) {
+                      $navTemp.append("<li class='active'><a class='pageClick'>"+pageNums[i]+"<span class='sr-only'>(current)</span></a></li>");
+                  } else {
+                      $navTemp.append("<li><a class='pageClick'>"+pageNums[i]+"</a></li>");
+                  }
+              }
+              if($("#pageNoNow").val() == pageNums[pageNums.length-1]) {
+                  $navTemp.append("<li class='disabled'><a aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
+              } else {
+                  $navTemp.append("<li><a aria-label='Next'><span aria-hidden='true'>&raquo;</span></a></li>");
+              }
+              $navTemp.appendTo("#nav");
+          }
+
+          function bingPageClick() {
+              $(".pageClick").on('click',function(){
+                  alert(this.textContent);
+                  if(this.textContent.indexOf("current") == -1 ) {
+                      //修改pageNoNow
+                      $("#pageNoNow").val(this.textContent);
+                      //修改pageStart
+                      $("#pageStart").val((Number(this.textContent)-1)*10);
+                      //ajax
+                      ajaxFunction();
+                  }
+              });
           }
 
 
