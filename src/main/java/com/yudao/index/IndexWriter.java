@@ -1,19 +1,14 @@
 package com.yudao.index;
 
-import com.yudao.constant.Constant;
 import com.yudao.data.excel.ImportExcelData;
 import com.yudao.entity.Book;
-import com.yudao.entity.News;
-import com.yudao.utils.DateUtils;
 import com.yudao.utils.LucenceUtils;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.yudao.data.excel.ExcelReaderUtil.readExcel2;
@@ -27,16 +22,15 @@ import static com.yudao.data.excel.ExcelReaderUtil.readExcel2;
  */
 public class IndexWriter {
 
-    public static void maain(String[] args) {
-
-        loadData();
+    public static void main(String[] args) {
+        loadData("books_cn.xls");
     }
 
-    private static void loadData(){
-        String file = System.getProperty("user.dir") + "/files/books_en.xls";
+    private static void loadData(String fileName){
+        String file = System.getProperty("user.dir") + "/files/"+fileName;
         File file1 = new File(file);
         try {
-            org.apache.lucene.index.IndexWriter writer = LucenceUtils.getWriter(FSDirectory.open(Paths.get(Constant.INDEX_PATH)));
+            org.apache.lucene.index.IndexWriter writer = LucenceUtils.getWriter(FSDirectory.open(Paths.get(System.getProperty("user.dir") + "/src/main/resources/index")));
             ImportExcelData data = readExcel2(file1);
             for (List<String> item : data.getFirstSheetList()) {
                 String no = item.size()>0?item.get(0):"";
@@ -57,13 +51,14 @@ public class IndexWriter {
                 doc.add(new StringField("address",book.getAddress(), Field.Store.YES));
                 //用于排序
                 doc.add(new StringField("index", book.getIndex(), Field.Store.YES));
-                doc.add(new StringField("id" , book.getNo(), Field.Store.YES));
+                doc.add(new NumericDocValuesField("id", Long.parseLong(book.getNo())));
 
                 Term id=new Term("id",book.getNo());
 
                 writer.updateDocument(id,doc);
             }
 
+            writer.forceMerge(1);
             LucenceUtils.closeWriter(writer);
         } catch (Exception e) {
             e.printStackTrace();

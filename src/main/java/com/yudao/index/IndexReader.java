@@ -26,14 +26,14 @@ public class IndexReader {
         int pageStart = 0;//开始ID
         int pageNoNow = 1;
         int pageSize = 10;//每页大小
-        String field = "全部";//查找域
+        String field = "题名";//查找域
         String keyword = "印度";//关键字
 
         Result result = search(pageStart,pageSize,pageNoNow,field,keyword);
         System.out.println(result.getNumHits());
         System.out.println(result.getBooks().get(0).getName());
 
-        //search2();
+        System.out.println(Thread.currentThread().getContextClassLoader().getResource("index").getPath());
 
     }
 
@@ -63,7 +63,7 @@ public class IndexReader {
         try {
             Query query=parser.parse(keyword,fields,flags,analyzer);
 
-            Directory dir = FSDirectory.open(Paths.get(Constant.INDEX_PATH));
+            Directory dir = FSDirectory.open(Paths.get("D:/workspaces/booksearch_v2.1/tony_book/build/resources/main/index"));
             org.apache.lucene.index.IndexReader reader = DirectoryReader.open(dir);
             IndexSearcher search = new IndexSearcher(reader);
 
@@ -80,7 +80,7 @@ public class IndexReader {
             if(numHits > 0) {
                 //按照时间倒序
                 Sort sort = new Sort();
-                //sort.setSort(new SortField("id", SortField.Type.STRING, false));//倒序
+                sort.setSort(new SortField("id", SortField.Type.INT,true));//升序
 
                 //分页
                 TopFieldCollector c = TopFieldCollector.create(sort, pageStart+pageSize, false, false, false);
@@ -132,5 +132,19 @@ public class IndexReader {
         return pagelist;
     }
 
+
+    private static void test(){
+        try {
+            Directory dir = FSDirectory.open(Paths.get("D:/workspaces/booksearch_v2.1/tony_book/build/resources/main/index"));
+            org.apache.lucene.index.IndexReader reader = DirectoryReader.open(dir);
+            IndexSearcher search = new IndexSearcher(reader);
+
+
+
+
+        } catch (Exception e){
+
+        }
+    }
 
 }
