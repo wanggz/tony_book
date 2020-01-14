@@ -1,13 +1,10 @@
 package com.yudao.index;
 
-import com.yudao.constant.Constant;
 import com.yudao.entity.Book;
 import com.yudao.entity.Result;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -23,11 +20,11 @@ public class IndexReader {
 
     public static void main(String[] args) {
 
-        int pageStart = 10;//开始ID
-        int pageNoNow = 2;
+        int pageStart = 0;//开始ID
+        int pageNoNow = 1;
         int pageSize = 10;//每页大小
         String field = "题名";//查找域
-        String keyword = "印度";//关键字
+        String keyword = "中国藏学";//关键字
 
         Result result = search(pageStart,pageSize,pageNoNow,field,keyword);
         System.out.println(result.getNumHits());
@@ -39,28 +36,24 @@ public class IndexReader {
 
         Result result = new Result();
 
-        String[] fields;
+        String indexField = "name";
         switch (field){
             case "全部":
-                fields = new String[]{"name", "author", "publisher"};
+                indexField = "name";
             case "题名":
-                fields = new String[]{"name"};
+                indexField = "name";
             case "责任者":
-                fields = new String[]{"author"};
+                indexField = "author";
             case "出版者":
-                fields = new String[]{"publisher"};
+                indexField = "publisher";
             default:
-                fields = new String[]{"name", "author", "publisher"};
+                indexField = "name";
         }
 
-        BooleanClause.Occur [] flags = new BooleanClause.Occur[]{BooleanClause.Occur.MUST,BooleanClause.Occur.MUST,BooleanClause.Occur.MUST};
-        Analyzer analyzer = new StandardAnalyzer();
-
-        MultiFieldQueryParser parser=new MultiFieldQueryParser(fields,analyzer);
+        String nkeyword = "*" + keyword + "*";
+        Query query = new WildcardQuery(new Term(indexField, nkeyword));
 
         try {
-            Query query=parser.parse(keyword,fields,flags,analyzer);
-
             //获取path
             String path = Thread.currentThread().getContextClassLoader().getResource("index").getPath();
 

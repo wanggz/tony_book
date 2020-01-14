@@ -45,8 +45,8 @@ dependencies {
     //compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'javax.servlet:jstl'
     compile 'org.apache.tomcat.embed:tomcat-embed-jasper'
-    providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
-    runtime('org.springframework.boot:spring-boot-devtools')
+    //providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+    //runtime('org.springframework.boot:spring-boot-devtools')
 
     compile 'org.apache.poi:poi:4.0.0'
     compile 'org.apache.poi:poi-ooxml:4.0.0'

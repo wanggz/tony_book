@@ -23,7 +23,7 @@ import static com.yudao.data.excel.ExcelReaderUtil.readExcel2;
 public class IndexWriter {
 
     public static void main(String[] args) {
-        loadData("books_en.xls");
+        loadData("books_cn.xls");
     }
 
     private static void loadData(String fileName){
@@ -44,9 +44,9 @@ public class IndexWriter {
                 Book book = new Book(no, index, name, author, publisher, count, address);
 
                 Document doc = new Document();
-                doc.add(new TextField("name",book.getName(), Field.Store.YES));
-                doc.add(new TextField("author",book.getAuthor(), Field.Store.YES));
-                doc.add(new TextField("publisher",book.getPublisher(), Field.Store.YES));
+                doc.add(new StringField("name",book.getName(), Field.Store.YES));
+                doc.add(new StringField("author",book.getAuthor(), Field.Store.YES));
+                doc.add(new StringField("publisher",book.getPublisher(), Field.Store.YES));
                 doc.add(new StringField("count",book.getCount(), Field.Store.YES));
                 doc.add(new StringField("address",book.getAddress(), Field.Store.YES));
                 //用于排序
