@@ -16,6 +16,7 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'war'
 // 使用spring boot
 apply plugin: "org.springframework.boot"
 // 使用spring boot的自动依赖管理
@@ -44,6 +45,8 @@ dependencies {
     //compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'javax.servlet:jstl'
     compile 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+    runtime('org.springframework.boot:spring-boot-devtools')
 
     compile 'org.apache.poi:poi:4.0.0'
     compile 'org.apache.poi:poi-ooxml:4.0.0'
