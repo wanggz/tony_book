@@ -23,8 +23,8 @@ public class IndexReader {
 
     public static void main(String[] args) {
 
-        int pageStart = 0;//开始ID
-        int pageNoNow = 1;
+        int pageStart = 10;//开始ID
+        int pageNoNow = 2;
         int pageSize = 10;//每页大小
         String field = "题名";//查找域
         String keyword = "印度";//关键字
@@ -32,8 +32,6 @@ public class IndexReader {
         Result result = search(pageStart,pageSize,pageNoNow,field,keyword);
         System.out.println(result.getNumHits());
         System.out.println(result.getBooks().get(0).getName());
-
-        System.out.println(Thread.currentThread().getContextClassLoader().getResource("index").getPath());
 
     }
 
@@ -63,7 +61,14 @@ public class IndexReader {
         try {
             Query query=parser.parse(keyword,fields,flags,analyzer);
 
-            Directory dir = FSDirectory.open(Paths.get("D:/workspaces/booksearch_v2.1/tony_book/build/resources/main/index"));
+            //获取path
+            String path = Thread.currentThread().getContextClassLoader().getResource("index").getPath();
+
+            if(path.contains(":")){  // windows机器
+                path = path.substring(1);
+            }
+
+            Directory dir = FSDirectory.open(Paths.get(path));
             org.apache.lucene.index.IndexReader reader = DirectoryReader.open(dir);
             IndexSearcher search = new IndexSearcher(reader);
 
