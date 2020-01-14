@@ -171,7 +171,6 @@
               var field = mydropdown.placeholder["0"].textContent;
               var pageStart = $("#pageStart").val();
               var pageNoNow = $("#pageNoNow").val();
-              alert("pageNoNow:"+pageNoNow+",pageStart:"+pageStart);
 
               $.ajax({
                   type : "GET",
@@ -236,7 +235,6 @@
 
           function bingPageClick() {
               $(".pageClick").on('click',function(){
-                  alert(this.textContent);
                   if(this.textContent.indexOf("current") == -1 ) {
                       //修改pageNoNow
                       $("#pageNoNow").val(this.textContent);

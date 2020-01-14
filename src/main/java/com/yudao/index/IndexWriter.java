@@ -23,7 +23,7 @@ import static com.yudao.data.excel.ExcelReaderUtil.readExcel2;
 public class IndexWriter {
 
     public static void main(String[] args) {
-        loadData("books_cn.xls");
+        loadData("books_en.xls");
     }
 
     private static void loadData(String fileName){
@@ -51,7 +51,8 @@ public class IndexWriter {
                 doc.add(new StringField("address",book.getAddress(), Field.Store.YES));
                 //用于排序
                 doc.add(new StringField("index", book.getIndex(), Field.Store.YES));
-                doc.add(new NumericDocValuesField("id", Long.parseLong(book.getNo())));
+                doc.add(new StringField("id", book.getNo(), Field.Store.YES));
+                doc.add(new NumericDocValuesField("_id", Long.parseLong(book.getNo())));
 
                 Term id=new Term("id",book.getNo());
 

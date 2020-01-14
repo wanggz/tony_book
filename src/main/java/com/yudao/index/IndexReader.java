@@ -85,7 +85,7 @@ public class IndexReader {
             if(numHits > 0) {
                 //按照时间倒序
                 Sort sort = new Sort();
-                sort.setSort(new SortField("id", SortField.Type.INT,true));//升序
+                sort.setSort(new SortField("_id", SortField.Type.INT,true));//升序
 
                 //分页
                 TopFieldCollector c = TopFieldCollector.create(sort, pageStart+pageSize, false, false, false);
